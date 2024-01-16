@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iKSMFU Tool</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+    }
+
+    #iksmfu-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    #message-box {
+      width: 300px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #message-input {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    #discord-webhook-input {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    #submit-btn {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div id="message-box">
+  <div id="iksmfu-title">iKSMFU Tool</div>
+  <textarea id="message-input" placeholder="Enter your message..."></textarea>
+  <input id="discord-webhook-input" type="text" placeholder="Enter Discord webhook...">
+  <button id="submit-btn" onclick="sendMessage()">Submit</button>
+</div>
+
+<script>
+  function sendMessage() {
+    const messageInput = document.getElementById('message-input');
+    const message = messageInput.value.trim();
+
+    if (message !== '') {
+      const discordWebhookInput = document.getElementById('discord-webhook-input');
+      const discordWebhookUrl = discordWebhookInput.value.trim();
+
+      if (discordWebhookUrl !== '') {
+        fetch(discordWebhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ content: message }),
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Message sent successfully:', data);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+
+        // Optional: Clear the message and webhook input after sending
+        messageInput.value = '';
+        discordWebhookInput.value = '';
+      } else {
+        console.error('Discord webhook URL is required.');
+      }
+    } else {
+      console.error('Message cannot be empty.');
+    }
+  }
+</script>
+
+</body>
+</html>
